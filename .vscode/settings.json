@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/447a6a27-9f16-4141-b4f0-a2e71f146811/resourceGroups/appsvc_linux_centralus_basic/providers/Microsoft.Web/sites/cperos-avatar",
+    "appService.deploySubpath": "aframe"
+}
