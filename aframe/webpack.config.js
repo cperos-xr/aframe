@@ -13,17 +13,13 @@ module.exports = {
   devtool: 'source-map',
   mode: 'development',
   devServer: {
-    allowedHosts: [
-      'localhost',
-      '.github.com', // Add your GitHub domain or hostname here
-    ],
-    host: '0.0.0.0',
-    port: 3000 || process.env.PORT,
+    allowedHosts: 'auto' | 'all' | Array[string],
+    port: process.env.PORT || 9000,
     hot: false,
     liveReload: true,
     static: {
-      directory: 'examples',
-    },
+      directory: 'examples'
+    }
   },
   plugins: [
     new webpack.DefinePlugin({
