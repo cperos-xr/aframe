@@ -82,46 +82,55 @@
     var SpeechSDK;
     var isRecording = false;
 
-    document.addEventListener('DOMContentLoaded', function () {
-      var recognizeButton = document.querySelector('#myButton');
-      var recognizedText = document.querySelector('#recognizedText');
+    document.addEventListener('DOMContentLoaded', async function () {
+      try {
+        // Fetch the configuration from the server
+        const configResponse = await fetch('/api/config');
+        const config = await configResponse.json();
+        var subscriptionKey = config.SPEECH_KEY; // Use the key from the server
 
-      if (!!window.SpeechSDK) {
-        SpeechSDK = window.SpeechSDK;
-        recognizeButton.disabled = false;
-      } else {
-        console.error('Speech SDK not found!');
-      }
+        var serviceRegion = 'westus'; // Replace with your service region
 
-      recognizeButton.addEventListener('click', function () {
-        if (!isRecording) {
-          isRecording = true;
-          recognizeButton.setAttribute('material', 'color', 'green');
+        var recognizeButton = document.querySelector('#myButton');
+        var recognizedText = document.querySelector('#recognizedText');
 
-          var subscriptionKey = 'AZURE_KEY'; // Replace with your subscription key
-          var serviceRegion = 'westus'; // Replace with your service region
+        if (!!window.SpeechSDK) {
+          SpeechSDK = window.SpeechSDK;
+          recognizeButton.disabled = false;
 
-          var speechConfig = SpeechSDK.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
-          speechConfig.speechRecognitionLanguage = "en-US";
-          var audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
-          var recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+          recognizeButton.addEventListener('click', function () {
+            if (!isRecording) {
+              isRecording = true;
+              recognizeButton.setAttribute('material', 'color', 'green');
 
-          recognizer.recognizeOnceAsync(
-            function (result) {
-              recognizedText.setAttribute('value', result.text); // Update the recognized text in the A-Frame scene
-              isRecording = false;
-              recognizeButton.setAttribute('material', 'color', 'red'); // Change button color back to red when recording stops
-              recognizer.close();
-            },
-            function (err) {
-              console.error('Speech recognition error:', err);
-              isRecording = false;
-              recognizeButton.setAttribute('material', 'color', 'red'); // Change button color back to red if an error occurs
-              recognizer.close();
+              // Configure the speech SDK with the fetched subscription key
+              var speechConfig = SpeechSDK.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
+              speechConfig.speechRecognitionLanguage = "en-US";
+              var audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+              var recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+
+              recognizer.recognizeOnceAsync(
+                function (result) {
+                  recognizedText.setAttribute('value', result.text); // Update the recognized text in the A-Frame scene
+                  isRecording = false;
+                  recognizeButton.setAttribute('material', 'color', 'red'); // Change button color back to red when recording stops
+                  recognizer.close();
+                },
+                function (err) {
+                  console.error('Speech recognition error:', err);
+                  isRecording = false;
+                  recognizeButton.setAttribute('material', 'color', 'red'); // Change button color back to red if an error occurs
+                  recognizer.close();
+                }
+              );
             }
-          );
+          });
+        } else {
+          console.error('Speech SDK not found!');
         }
-      });
+      } catch (error) {
+        console.error('Error fetching configuration:', error);
+      }
 
       // Animation selection logic
       document.body.addEventListener('keydown', function(event) {

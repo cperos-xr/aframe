@@ -7,7 +7,7 @@ speechConfig.speechRecognitionLanguage = "en-US";
 
 function recognizeSpeech(audioBlob) {
     console.log('recognizeSpeech function called'); // Add this line
-    let audioConfig = sdk.AudioConfig.fromWavFileInput(audioBlob);
+    let audioConfig = sdk.AudioConfig.(audioBlob);
     let speechRecognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
 
     // Get the recognizedText entity from the A-Frame scene
