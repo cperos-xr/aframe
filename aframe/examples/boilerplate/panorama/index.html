@@ -84,6 +84,8 @@
 
     document.addEventListener('DOMContentLoaded', async function () {
       try {
+        // Request microphone permission
+        await navigator.mediaDevices.getUserMedia({ audio: true });
         // Fetch the configuration from the server
         const configResponse = await fetch('/api/config');
         const config = await configResponse.json();
