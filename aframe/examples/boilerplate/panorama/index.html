@@ -94,20 +94,36 @@
 
     ws.onopen = function() {
       console.log('Connected to the server');
-      ws.send('Hello, server!');
     };
 
     ws.onmessage = function(event) {
-        console.log('Message from server:', event.data);
-    };
+    try {
+        const data = JSON.parse(event.data);
+        console.log('Message from server:', data);
+        var responseText = document.querySelector('#response');
+        responseText.setAttribute('value', data.message || 'No response');
+    } catch (error) {
+        console.error('Error parsing server message:', error);
+    }
+};
 
     ws.onerror = function(error) {
-        console.error('WebSocket error:', error);
+      console.error('WebSocket error:', error);
     };
 
     ws.onclose = function() {
-        console.log('WebSocket connection closed');
+      console.log('WebSocket connection closed');
     };
+
+    // Sending user input to server via WebSocket
+    document.querySelector('#chatUI button').addEventListener('click', function () {
+      var text = document.querySelector('#chatUI input').value;
+      if (text) {
+        ws.send(text); // Send text to server
+        document.querySelector('#chatUI input').value = ''; // Clear the input field
+      }
+    });
+
 ////////////////////////
     document.addEventListener('DOMContentLoaded', async function () {
       try {

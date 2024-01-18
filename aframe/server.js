@@ -15,12 +15,19 @@ const wss = new WebSocket.Server({ server });
 wss.on('connection', function connection(ws) {
   console.log("WebSocket client connected");
 
-  // Message event handler
-  ws.on('message', function incoming(message) {
-      console.log('Received message: %s', message);
-
-      // Echo the received message back to the client
-      ws.send(`Echo: ${message}`);
+  ws.on('message', async function incoming(buffer) {
+    const message = buffer.toString();
+    console.log('Received message from client:', message);
+    interactWithInworldAI(message, ws);
+/*
+    try {
+      const aiResponse = await interactWithInworldAI(message);
+      // Send AI response back to the client
+      ws.send(JSON.stringify(aiResponse));
+    } catch (error) {
+      console.error('Error processing AI interaction:', error);
+      ws.send(JSON.stringify({ error: 'Error processing AI interaction' }));
+    }*/
   });
 
   // Error event handler
@@ -34,10 +41,8 @@ wss.on('connection', function connection(ws) {
   });
 
   // Send a welcome message to the client
-  ws.send('Welcome to the WebSocket server!');
+  ws.send(JSON.stringify({ message: 'Welcome to the WebSocket server!' }));
 });
-
-
 
 // Serve static files from the project root
 app.use(express.static(path.join(__dirname)));
@@ -54,13 +59,14 @@ app.get('/api/config', (req, res) => {
   });
 });
 
+/*
 app.post('/api/inworld-interaction', (req, res) => {
   const userInput = req.body.text;
   interactWithInworldAI(userInput, (messages) => {
       res.json({ messages });
   });
 });
-
+*/
 
 // Start the server
 const port = process.env.PORT || 3000;
