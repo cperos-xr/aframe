@@ -45,6 +45,8 @@
     "deep-assign": "^2.0.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-ws": "^5.0.2",
+    "http-simple-proxy": "^1.0.5",
     "load-bmfont": "^1.2.3",
     "microsoft-cognitiveservices-speech-sdk": "^1.34.0",
     "object-assign": "^4.0.1",
@@ -55,7 +57,9 @@
     "super-animejs": "^3.1.0",
     "super-three": "0.160.0",
     "three-bmfont-text": "dmarcos/three-bmfont-text#eed4878795be9b3e38cf6aec6b903f56acd1f695",
-    "webvr-polyfill": "^0.10.12"
+    "webvr-polyfill": "^0.10.12",
+    "ws": "^8.16.0",
+    "wscat": "^5.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.10",

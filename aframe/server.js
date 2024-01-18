@@ -1,15 +1,48 @@
 const express = require('express');
 const path = require('path');
-const app = express();
 const dotenv = require('dotenv').config();
-//const { InworldClient, status } = require('@inworld/nodejs-sdk');
+
 const { interactWithInworldAI } = require('./inworldAI');
 
-// Serve static files from the project root
+const app = express();
 
+const http = require('http');
+const WebSocket = require('ws');
+
+const server = http.createServer();
+const wss = new WebSocket.Server({ server });
+// WebSocket connection handler
+wss.on('connection', function connection(ws) {
+  console.log("WebSocket client connected");
+
+  // Message event handler
+  ws.on('message', function incoming(message) {
+      console.log('Received message: %s', message);
+
+      // Echo the received message back to the client
+      ws.send(`Echo: ${message}`);
+  });
+
+  // Error event handler
+  ws.on('error', function error(error) {
+      console.error('WebSocket error:', error);
+  });
+
+  // Close event handler
+  ws.on('close', function close() {
+      console.log('WebSocket connection closed');
+  });
+
+  // Send a welcome message to the client
+  ws.send('Welcome to the WebSocket server!');
+});
+
+
+
+// Serve static files from the project root
 app.use(express.static(path.join(__dirname)));
 app.use(express.json());
-
+//app.use(express.static(path.join(__dirname, 'dist'))); // for distribution
 
 app.get('/api/config', (req, res) => {
   res.json({ 
@@ -21,20 +54,24 @@ app.get('/api/config', (req, res) => {
   });
 });
 
-app.post('/api/inworld-interaction', async (req, res) => {
-  try {
-      const userInput = req.body.text;
-      const response = await interactWithInworldAI(userInput);
-      res.json(response);
-  } catch (error) {
-      console.error(error);
-      res.status(500).send('Error processing Inworld AI interaction');
-  }
+app.post('/api/inworld-interaction', (req, res) => {
+  const userInput = req.body.text;
+  interactWithInworldAI(userInput, (messages) => {
+      res.json({ messages });
+  });
 });
 
 
+// Start the server
 const port = process.env.PORT || 3000;
+
+const port2 = port + 1;
+server.listen(port2, () => {
+    console.log(`Server running on port ${port2}`);
+});
+
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`app running on port ${port}`);
   //console.log(`ConvAI API Key: ${process.env.INWORLD_SCENE}`); // Test log for CONVAI_API_KEY
 });
+

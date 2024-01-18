@@ -61,7 +61,8 @@
 
 
     <a-text id="recognizedText" value="Recognized Text Placeholder" position="0 2 -3"></a-text>
-    
+
+    <a-text id="response" value="AI Response Placeholder" position="0 3 -3"></a-text>
 
 
     <!-- "button" -->
@@ -83,9 +84,31 @@
 
     var SpeechSDK;
     var isRecording = false;
+///////////////////////////////ws
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'wss:';
+    const wsURL = `${wsProtocol}//${window.location.host}`;
+    console.log("attempting connection to " + wsURL);
+    //const ws = new WebSocket(wsURL);
 
+    const ws = new WebSocket('ws://localhost:3001');
 
+    ws.onopen = function() {
+      console.log('Connected to the server');
+      ws.send('Hello, server!');
+    };
 
+    ws.onmessage = function(event) {
+        console.log('Message from server:', event.data);
+    };
+
+    ws.onerror = function(error) {
+        console.error('WebSocket error:', error);
+    };
+
+    ws.onclose = function() {
+        console.log('WebSocket connection closed');
+    };
+////////////////////////
     document.addEventListener('DOMContentLoaded', async function () {
       try {
         // Request microphone permission
@@ -108,7 +131,24 @@
         sendButton.addEventListener('click', function () {
           var text = inputField.value;
           if (text) {
-            //sendTextToConvAI(text);
+            console.log("Sending ... " + text);
+            fetch('/api/inworld-interaction', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: text })
+            })
+            .then(response => {
+              if (!response.ok) { throw new Error('Network response was not ok ' + response.statusText); }
+              return response.json();
+            })
+            .then(data => {
+              console.log("getting response... " + data);
+              var responseText = document.querySelector('#response');
+              responseText.setAttribute('value', data.messages.join(' ')); // Update A-Frame text
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+            });
             inputField.value = ''; // Clear the input field
           }
         });
@@ -153,6 +193,7 @@
       } catch (error) {
         console.error('Error fetching configuration:', error);
       }
+
 
       // Animation selection logic
       document.body.addEventListener('keydown', function(event) {

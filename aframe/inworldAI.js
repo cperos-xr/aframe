@@ -1,6 +1,7 @@
 const { InworldClient, status } = require('@inworld/nodejs-sdk');
 
 async function interactWithInworldAI(userInput) {
+    const messages = []; // Initialize an array to store messages
     const client = new InworldClient()
         .setApiKey({
             key: process.env.INWORLD_KEY,
@@ -24,7 +25,8 @@ async function interactWithInworldAI(userInput) {
         .setOnMessage((packet) => {
             // TEXT
             if (packet.isText()) {
-                console.log(`Text: ${packet.text.text}`);
+                console.log(`Text: ${packet.text.text}`); // Log for debugging
+                messages.push(packet.text.text); // Collect text messages
             }
         
             // EMOTION
@@ -37,15 +39,19 @@ async function interactWithInworldAI(userInput) {
         
             // INTERACTION_END
             if (packet.isInteractionEnd()) {
+                console.log("ending connection");
                 connection.close();
             }
         }); // End of setOnMessage
 
     const connection = client.build();
 
+
+    //Send user input
     try {
-        const response = await connection.sendText(userInput);
-        return response;
+        await connection.sendText(userInput);
+
+        return { messages }; // Return the collected messages
     } catch (error) {
         throw error;
     }
