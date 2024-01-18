@@ -1,0 +1,6 @@
+POST http://localhost:3000/api/inworld-interaction
+Content-Type: application/json
+
+{
+  "text": "Hello"
+}

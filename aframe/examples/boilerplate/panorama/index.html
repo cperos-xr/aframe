@@ -79,8 +79,12 @@
   </a-scene>
 
   <script>
+    //import { sendTextToConvAI } from '../../../convaiIntegration.js';
+
     var SpeechSDK;
     var isRecording = false;
+
+
 
     document.addEventListener('DOMContentLoaded', async function () {
       try {
@@ -95,6 +99,21 @@
 
         var recognizeButton = document.querySelector('#myButton');
         var recognizedText = document.querySelector('#recognizedText');
+
+        var sendButton = document.querySelector('#chatUI button');
+        var inputField = document.querySelector('#chatUI input');
+        var messagesDiv = document.querySelector('#messages');
+
+
+        sendButton.addEventListener('click', function () {
+          var text = inputField.value;
+          if (text) {
+            //sendTextToConvAI(text);
+            inputField.value = ''; // Clear the input field
+          }
+        });
+
+
 
         if (!!window.SpeechSDK) {
           SpeechSDK = window.SpeechSDK;
@@ -114,6 +133,7 @@
               recognizer.recognizeOnceAsync(
                 function (result) {
                   recognizedText.setAttribute('value', result.text); // Update the recognized text in the A-Frame scene
+                  inputField.value = result.text;
                   isRecording = false;
                   recognizeButton.setAttribute('material', 'color', 'red'); // Change button color back to red when recording stops
                   recognizer.close();
