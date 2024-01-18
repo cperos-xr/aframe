@@ -76,6 +76,15 @@
     <a-text value="Record" align="center" color="white"></a-text>
     </a-entity>
 
+    <a-entity
+    id="mySubmitButton"
+    geometry="primitive: plane; width: 1.25; height: 0.5"
+    material="color: BlueViolet; shader: flat"
+    position="2 3 -3"
+    class="raycastable menu-button">
+    <a-text value="Submit" align="center" color="white"></a-text>
+    </a-entity>
+
 
   </a-scene>
 
@@ -121,11 +130,20 @@
       }
     });
 
+    document.querySelector('#mySubmitButton').addEventListener('click', function () {
+      var inputField = document.querySelector('#chatUI input');
+      var text = inputField.value;
+      if (text) {
+        ws.send(text); // Send text to server via WebSocket
+        inputField.value = ''; // Clear the input field
+      }
+    });
+
 ////////////////////////
     document.addEventListener('DOMContentLoaded', async function () {
       try {
         // Request microphone permission
-        await navigator.mediaDevices.getUserMedia({ audio: true });
+        //await navigator.mediaDevices.getUserMedia({ audio: true });
         // Fetch the configuration from the server
         const configResponse = await fetch('/api/config');
         const config = await configResponse.json();
@@ -139,33 +157,6 @@
         var sendButton = document.querySelector('#chatUI button');
         var inputField = document.querySelector('#chatUI input');
         var messagesDiv = document.querySelector('#messages');
-
-
-        sendButton.addEventListener('click', function () {
-          var text = inputField.value;
-          if (text) {
-            console.log("Sending ... " + text);
-            fetch('/api/inworld-interaction', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ text: text })
-            })
-            .then(response => {
-              if (!response.ok) { throw new Error('Network response was not ok ' + response.statusText); }
-              return response.json();
-            })
-            .then(data => {
-              console.log("getting response... " + data);
-              var responseText = document.querySelector('#response');
-              responseText.setAttribute('value', data.messages.join(' ')); // Update A-Frame text
-            })
-            .catch((error) => {
-              console.error('Error:', error);
-            });
-            inputField.value = ''; // Clear the input field
-          }
-        });
-
 
 
         if (!!window.SpeechSDK) {
