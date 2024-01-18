@@ -45,9 +45,9 @@ wss.on('connection', function connection(ws) {
 });
 
 // Serve static files from the project root
-app.use(express.static(path.join(__dirname)));
+//app.use(express.static(path.join(__dirname)));
 app.use(express.json());
-//app.use(express.static(path.join(__dirname, 'dist'))); // for distribution
+app.use(express.static(path.join(__dirname, 'dist'))); // for distribution
 
 app.get('/api/config', (req, res) => {
   res.json({ 
@@ -70,7 +70,6 @@ app.post('/api/inworld-interaction', (req, res) => {
 
 // Start the server
 const port = process.env.PORT || 3000;
-
 const port2 = port + 1;
 server.listen(port2, () => {
     console.log(`Server running on port ${port2}`);
