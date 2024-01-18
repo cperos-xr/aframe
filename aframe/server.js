@@ -1,34 +1,26 @@
 const express = require('express');
+const http = require('http');
+const WebSocket = require('ws');
 const path = require('path');
 const dotenv = require('dotenv').config();
-
 const { interactWithInworldAI } = require('./inworldAI');
 
 const app = express();
+const server = http.createServer(app); // HTTP server from Express app
+const wss = new WebSocket.Server({ server }); // Attach WebSocket server to the same HTTP server
 
-const http = require('http');
-const WebSocket = require('ws');
 
-const server = http.createServer();
-const wss = new WebSocket.Server({ server });
+
 // WebSocket connection handler
 wss.on('connection', function connection(ws) {
-  console.log("WebSocket client connected");
-
-  ws.on('message', async function incoming(buffer) {
-    const message = buffer.toString();
+  // Inside WebSocket 'connection' event handler
+  ws.on('message', function incoming(buffer) {
+    const message = buffer.toString(); // Convert buffer to string
     console.log('Received message from client:', message);
     interactWithInworldAI(message, ws);
-/*
-    try {
-      const aiResponse = await interactWithInworldAI(message);
-      // Send AI response back to the client
-      ws.send(JSON.stringify(aiResponse));
-    } catch (error) {
-      console.error('Error processing AI interaction:', error);
-      ws.send(JSON.stringify({ error: 'Error processing AI interaction' }));
-    }*/
   });
+
+
 
   // Error event handler
   ws.on('error', function error(error) {
@@ -59,24 +51,9 @@ app.get('/api/config', (req, res) => {
   });
 });
 
-/*
-app.post('/api/inworld-interaction', (req, res) => {
-  const userInput = req.body.text;
-  interactWithInworldAI(userInput, (messages) => {
-      res.json({ messages });
-  });
-});
-*/
-
 // Start the server
 const port = process.env.PORT || 3000;
-const port2 = port + 1;
-server.listen(port2, () => {
-    console.log(`Server running on port ${port2}`);
-});
-
-app.listen(port, () => {
-  console.log(`app running on port ${port}`);
-  //console.log(`ConvAI API Key: ${process.env.INWORLD_SCENE}`); // Test log for CONVAI_API_KEY
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
 

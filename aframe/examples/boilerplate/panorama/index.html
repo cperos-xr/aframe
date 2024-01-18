@@ -85,12 +85,9 @@
     var SpeechSDK;
     var isRecording = false;
 ///////////////////////////////ws
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'wss:';
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsURL = `${wsProtocol}//${window.location.host}`;
-    console.log("attempting connection to " + wsURL);
-    //const ws = new WebSocket(wsURL);
-
-    const ws = new WebSocket('ws://localhost:3001');
+    const ws = new WebSocket(wsURL);
 
     ws.onopen = function() {
       console.log('Connected to the server');
