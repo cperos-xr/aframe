@@ -45,9 +45,9 @@ wss.on('connection', function connection(ws) {
 });
 
 // Serve static files from the project root
-//app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname)));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'dist'))); // for distribution
+//app.use(express.static(path.join(__dirname, 'dist'))); // for distribution
 
 app.get('/api/config', (req, res) => {
   res.json({ 
